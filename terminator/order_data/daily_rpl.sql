@@ -43,6 +43,30 @@ order by date asc
 ;
 
 
-select *
+with loads as (
+select 
+    date,
+    -- widget_type,
+    sum(publisher_widget_loads) as widget_loads
 from curated.combined_discofeed_daily
-limit 10;
+where 
+    date >= '2023-10-01'
+group by all
+),
+conv as (
+select 
+    to_date(event_created_at) as date,
+    -- widget_type,
+    count(distinct order_id) as conv,
+    sum(billable_amount) as ad_spend
+from curated.combined_ad_spend_revenue asr 
+where 
+    conversion_type = 'cross-sell'
+group by all    
+)
+select 
+    *
+from loads l
+left join conv c using (date)
+order by date asc
+;

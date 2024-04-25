@@ -1,0 +1,48 @@
+--- Track 24-hour conversions against final RPL
+with loads as (
+select 
+    to_date(dvce_created_tstamp) as date,
+    -- widget_type,
+    -- ml_model,
+    count(distinct event_id) as loads,
+from event.event e
+where 
+    event_name = 'widget_display'
+    and to_date(dvce_created_tstamp) between '2024-01-01' and current_date - 14
+group by all 
+order by date asc
+),
+zeroday_conv as (
+--- Find 24-hour conversions
+select 
+    to_date(event_created_at) as date,
+    count(distinct c.order_id) as zeroday_conv,
+    sum(billable_amount) as zeroday_ad_spend,
+from dbt_tkaraffa.derived__conversion c 
+left join dbt_tkaraffa.curated__ad_spend_revenue using (order_id)
+where
+    conversion_type = 'cross-sell'
+    and days_to_attribution < 1
+    and to_date(event_created_at) between '2024-01-01' and current_date - 14
+group by all
+),
+all_conv as (
+--- Find All conversions
+select 
+    to_date(event_created_at) as date,
+    count(distinct c.order_id) as all_conv,
+    sum(billable_amount) as all_ad_spend,
+from dbt_tkaraffa.derived__conversion c
+left join dbt_tkaraffa.curated__ad_spend_revenue using (order_id)
+where
+    conversion_type = 'cross-sell'
+    and to_date(event_created_at) between '2024-01-01' and current_date - 14
+group by all)
+select 
+    *,
+    round(zeroday_ad_spend / loads,3) as zeroday_rpl,
+    round(all_ad_spend / loads,3) as all_rpl
+from loads l
+left join zeroday_conv z using (date)
+left join all_conv a using (date)
+order by date asc;
