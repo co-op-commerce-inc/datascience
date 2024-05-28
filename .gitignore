@@ -2,3 +2,5 @@
 .DS_Store
 max_budget/data/session_combos.csv
 .DS_Store
+Product Embeddings/data/top_product_output.csv
+Product Embeddings/.DS_Store
