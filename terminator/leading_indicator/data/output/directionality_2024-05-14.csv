@@ -1,0 +1,6 @@
+Model,Model Date,Total Days,Correct Directional Days,Directional Accuracy (%),Days with Actual Change,Correct on Change Days,Accuracy on Change Days (%)
+rpl_lr_pred,2024-05-14,60,45,0.75,51,45,0.882
+rpl_rf_pred,2024-05-14,60,47,0.783,51,47,0.922
+rpl_xg_pred,2024-05-14,60,44,0.733,51,44,0.863
+ad_spend_lr_pred,2024-05-14,60,43,0.717,60,43,0.717
+ad_spend_rf_pred,2024-05-14,60,42,0.7,60,42,0.7
